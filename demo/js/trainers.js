@@ -105,7 +105,7 @@ $(window).load(function() {
 });
 
 var reload = function() {
-  
+
   eval($("#layerdef").val()); // fills in trainer_spects[] array, and layer_defs
 
   var N = trainer_defs.length;
@@ -115,7 +115,7 @@ var reload = function() {
     var net = new convnetjs.Net();
     net.makeLayers(layer_defs);
     var trainer = new convnetjs.Trainer(net, trainer_defs[i]);
-    nets.push(net); 
+    nets.push(net);
     trainers.push(trainer);
   }
 
@@ -135,8 +135,8 @@ var reload = function() {
 }
 
 var start_fun = function() {
-  if(loaded[0] && loaded[20]) { 
-    console.log('starting!'); 
+  if(loaded[0] && loaded[20]) {
+    console.log('starting trainer!'); 
     setInterval(load_and_step, 0); // lets go!
   }
   else { setTimeout(start_fun, 200); } // keep checking
@@ -146,7 +146,7 @@ var load_data_batch = function(batch_num) {
   // Load the dataset with JS in background
   data_img_elts[batch_num] = new Image();
   var data_img_elt = data_img_elts[batch_num];
-  data_img_elt.onload = function() { 
+  data_img_elt.onload = function() {
     var data_canvas = document.createElement('canvas');
     data_canvas.width = data_img_elt.width;
     data_canvas.height = data_img_elt.height;

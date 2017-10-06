@@ -70,7 +70,7 @@ var sample_test_instance = function() {
 
   // distort position and maybe flip
   var xs = [];
-  
+
   if (random_flip || random_position){
     for(var k=0;k<6;k++) {
       var test_variation = x;
@@ -79,9 +79,9 @@ var sample_test_instance = function() {
         var dy = Math.floor(Math.random()*5-2);
         test_variation = convnetjs.augment(test_variation, image_dimension, dx, dy, false);
       }
-      
+
       if(random_flip){
-        test_variation = convnetjs.augment(test_variation, image_dimension, 0, 0, Math.random()<0.5); 
+        test_variation = convnetjs.augment(test_variation, image_dimension, 0, 0, Math.random()<0.5);
       }
 
       xs.push(test_variation);
@@ -89,7 +89,7 @@ var sample_test_instance = function() {
   }else{
     xs.push(x, image_dimension, 0, 0, false); // push an un-augmented copy
   }
-  
+
   // return multiple augmentations, and we will average the network over them
   // to increase performance
   return {x:xs, label:labels[n]};
@@ -113,12 +113,13 @@ $(window).load(function() {
 
   load_data_batch(0); // async load train set batch 0
   load_data_batch(test_batch); // async load test set
+  console.log('starting fun!');
   start_fun();
 });
 
 var start_fun = function() {
-  if(loaded[0] && loaded[test_batch]) { 
-    console.log('starting!'); 
+  if(loaded[0] && loaded[test_batch]) {
+    console.log('starting image demo!');
     setInterval(load_and_step, 0); // lets go!
   }
   else { setTimeout(start_fun, 200); } // keep checking
@@ -128,7 +129,7 @@ var load_data_batch = function(batch_num) {
   // Load the dataset with JS in background
   data_img_elts[batch_num] = new Image();
   var data_img_elt = data_img_elts[batch_num];
-  data_img_elt.onload = function() { 
+  data_img_elt.onload = function() {
     var data_canvas = document.createElement('canvas');
     data_canvas.width = data_img_elt.width;
     data_canvas.height = data_img_elt.height;
@@ -139,6 +140,7 @@ var load_data_batch = function(batch_num) {
     if(batch_num < test_batch) { loaded_train_batches.push(batch_num); }
     console.log('finished loading data batch ' + batch_num);
   };
+
   data_img_elt.src = dataset_name + "/" + dataset_name + "_batch_" + batch_num + ".png";
 }
 
@@ -176,7 +178,7 @@ var draw_activations = function(elt, A, scale, grads) {
         if(draw_grads) {
           var dval = Math.floor((A.get_grad(x,y,d)-mm.minv)/mm.dv*255);
         } else {
-          var dval = Math.floor((A.get(x,y,d)-mm.minv)/mm.dv*255);  
+          var dval = Math.floor((A.get(x,y,d)-mm.minv)/mm.dv*255);
         }
         for(var dx=0;dx<s;dx++) {
           for(var dy=0;dy<s;dy++) {
@@ -189,7 +191,7 @@ var draw_activations = function(elt, A, scale, grads) {
     }
     ctx.putImageData(g, 0, 0);
     elt.appendChild(canv);
-  }  
+  }
 }
 
 var draw_activations_COLOR = function(elt, A, scale, grads) {
@@ -216,7 +218,7 @@ var draw_activations_COLOR = function(elt, A, scale, grads) {
         if(draw_grads) {
           var dval = Math.floor((A.get_grad(x,y,d)-mm.minv)/mm.dv*255);
         } else {
-          var dval = Math.floor((A.get(x,y,d)-mm.minv)/mm.dv*255);  
+          var dval = Math.floor((A.get(x,y,d)-mm.minv)/mm.dv*255);
         }
         for(var dx=0;dx<s;dx++) {
           for(var dy=0;dy<s;dy++) {
@@ -251,7 +253,7 @@ var visualize_activations = function(net, elt) {
     activations_div.className = 'layer_act';
     var scale = 2;
     if(L.layer_type==='softmax' || L.layer_type==='fc') scale = 10; // for softmax
-    
+
     // HACK to draw in color in input layer
     if(i===0) {
       draw_activations_COLOR(activations_div, L.out_act, scale);
@@ -285,7 +287,7 @@ var visualize_activations = function(net, elt) {
 
     } else {
       draw_activations(activations_div, L.out_act, scale);
-    } 
+    }
 
     // visualize data gradients
     if(L.layer_type !== 'softmax' && L.layer_type !== 'input' ) {
@@ -391,11 +393,10 @@ var visualize_activations = function(net, elt) {
 // loads a training image and trains on it with the network
 var paused = false;
 var load_and_step = function() {
-  if(paused) return; 
-
+  if(paused) return;
   var sample = sample_training_instance();
   step(sample); // process this image
-  
+
   //setTimeout(load_and_step, 0); // schedule the next iteration
 }
 
@@ -411,7 +412,6 @@ var test_predict = function() {
   for(num=0;num<4;num++) {
     var sample = sample_test_instance();
     var y = sample.label;  // ground truth label
-
     // forward prop it through the network
     var aavg = new convnetjs.Vol(1,1,num_classes,0.0);
     // ensures we always have a list, regardless if above returns single item or list
@@ -422,9 +422,10 @@ var test_predict = function() {
       aavg.addFrom(a);
     }
     var preds = [];
+
     for(var k=0;k<aavg.w.length;k++) { preds.push({k:k,p:aavg.w[k]}); }
     preds.sort(function(a,b){return a.p<b.p ? 1:-1;});
-    
+
     var correct = preds[0].k===y;
     if(correct) num_correct++;
     num_total++;
@@ -437,9 +438,9 @@ var test_predict = function() {
 
     // add predictions
     var probsdiv = document.createElement('div');
-    
+
     var t = '';
-    for(var k=0;k<3;k++) {
+    for(var k=0;k<2;k++) {
       var col = preds[k].k===y ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
       t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p/n*100) + 'px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
     }
@@ -454,15 +455,18 @@ var test_predict = function() {
     }
   }
   testAccWindow.add(num_correct/num_total);
-  $("#testset_acc").text('test accuracy based on last 200 test images: ' + testAccWindow.get_average());  
+  $("#testset_acc").text('test accuracy based on last 200 test images: ' + testAccWindow.get_average());
 }
 var testImage = function(img) {
+  console.log("Re1sizing...")
+
   var x = convnetjs.img_to_vol(img);
+  console.log("Type of x...", typeof(x));
   var out_p = net.forward(x);
 
 
   var vis_elt = document.getElementById("visnet");
-  visualize_activations(net, vis_elt);
+  //visualize_activations(net, vis_elt);
 
   var preds =[]
   for(var k=0;k<out_p.w.length;k++) { preds.push({k:k,p:out_p.w[k]}); }
@@ -473,17 +477,19 @@ var testImage = function(img) {
   div.className = 'testdiv';
 
   // draw the image into a canvas
-  draw_activations_COLOR(div, x, 2);
+  // draw_activations_COLOR(div, x, 2);
 
   var probsdiv = document.createElement('div');
 
 
   var t = '';
-  for(var k=0;k<3;k++) {
+  for(var k=0;k<2;k++) {
     var col = k===0 ? 'rgb(85,187,85)' : 'rgb(187,85,85)';
     t += '<div class=\"pp\" style=\"width:' + Math.floor(preds[k].p/1*100) + 'px; background-color:' + col + ';\">' + classes_txt[preds[k].k] + '</div>'
+    console.log("TEST... ", classes_txt[preds[k].k])
+    console.log("TEST... ", preds[k].p)
   }
-  
+
   probsdiv.innerHTML = t;
   probsdiv.className = 'probsdiv';
   div.appendChild(probsdiv);
@@ -576,7 +582,7 @@ var step = function(sample) {
   step_num++;
 }
 
-// user settings 
+// user settings
 var change_lr = function() {
   trainer.learning_rate = parseFloat(document.getElementById("lr_input").value);
   update_net_param_display();
@@ -609,7 +615,7 @@ var dump_json = function() {
   document.getElementById("dumpjson").value = JSON.stringify(this.net.toJSON());
 }
 var clear_graph = function() {
-  lossGraph = new cnnvis.Graph(); // reinit graph too 
+  lossGraph = new cnnvis.Graph(); // reinit graph too
 }
 var reset_all = function() {
   // reinit trainer

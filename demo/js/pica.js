@@ -109,7 +109,8 @@ function resizeCanvas(from, to, options, callback) {
 
   var ctxTo = to.getContext('2d');
   var imageDataTo = ctxTo.getImageData(0, 0, w2, h2);
-
+  console.log("Resizing " +  String(w) + " " + String(h) + " ...");
+  console.log("To " +  String(w2) + " " + String(h2));
   var _opts = {
     src:      from.getContext('2d').getImageData(0, 0, w, h).data,
     dest:     imageDataTo.data,
@@ -662,7 +663,7 @@ module.exports = function (fn) {
     var keys = [];
     var wkey;
     var cacheKeys = Object.keys(cache);
-    
+
     for (var i = 0, l = cacheKeys.length; i < l; i++) {
         var key = cacheKeys[i];
         if (cache[key].exports === fn) {
@@ -670,7 +671,7 @@ module.exports = function (fn) {
             break;
         }
     }
-    
+
     if (!wkey) {
         wkey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
         var wcache = {};
@@ -684,13 +685,13 @@ module.exports = function (fn) {
         ];
     }
     var skey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
-    
+
     var scache = {}; scache[wkey] = wkey;
     sources[skey] = [
         Function(['require'],'require(' + stringify(wkey) + ')(self)'),
         scache
     ];
-    
+
     var src = '(' + bundleFn + ')({'
         + Object.keys(sources).map(function (key) {
             return stringify(key) + ':['

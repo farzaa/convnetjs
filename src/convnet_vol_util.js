@@ -12,7 +12,7 @@
     if(typeof(fliplr)==='undefined') var fliplr = false;
     if(typeof(dx)==='undefined') var dx = global.randi(0, V.sx - crop);
     if(typeof(dy)==='undefined') var dy = global.randi(0, V.sy - crop);
-    
+
     // randomly sample a crop in the input volume
     var W;
     if(crop !== V.sx || dx!==0 || dy!==0) {
@@ -47,7 +47,7 @@
   // img is a DOM element that contains a loaded image
   // returns a Vol of size (W, H, 4). 4 is for RGBA
   var img_to_vol = function(img, convert_grayscale) {
-
+    console.log('img_to_vol convnetjs_vol');
     if(typeof(convert_grayscale)==='undefined') var convert_grayscale = false;
 
     var canvas = document.createElement('canvas');
@@ -86,6 +86,8 @@
       pv.push(p[i]/255.0-0.5); // normalize image pixels to [-0.5, 0.5]
     }
     var x = new Vol(W, H, 4, 0.0); //input volume (image)
+    console.log("Converted img_to_vol with width " + str(W) + " and height " + str(H));
+
     x.w = pv;
 
     if(convert_grayscale) {
@@ -101,7 +103,7 @@
 
     return x;
   }
-  
+
   global.augment = augment;
   global.img_to_vol = img_to_vol;
 

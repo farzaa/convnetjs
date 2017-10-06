@@ -1,17 +1,20 @@
-
 var loadFile = function(event) {
 var reader = new FileReader();
 reader.onload = function(){
   var preview = document.getElementById('preview_img');
-  preview.src = centerCrop(reader.result);
-  preview.src = resize(preview.src);
+  preview.src = reader.result;
+  console.log(preview.src)
+  centerCrop(reader.result);
+  //preview.src = resize(reader.result);
 };
 reader.readAsDataURL(event.target.files[0]);
 };
 
-function centerCrop(src){
-    var image = new Image();
-    image.src = src;
+function centerCrop(img){
+    // var image = new Image(32,32);
+    // image.src = src;
+    console.log("Width... ", image.width)
+    console.log("Height... ", image.height)
 
     var max_width = Math.min(image.width, image.height);
     var max_height = Math.min(image.width, image.height);
@@ -22,24 +25,28 @@ function centerCrop(src){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     canvas.width = max_width;
     canvas.height = max_height;
-    ctx.drawImage(image, (max_width - image.width)/2, (max_height - image.height)/2, image.width, image.height);
+    console.log("Canvas width... ", canvas.width);
+    console.log("Canvas height... ", canvas.height)
+    ctx.drawImage(image, 0,0,32,32);
     return canvas.toDataURL("image/png");
 }
 
-function resize(src){
-    var image = new Image();
-    image.src = src;
+function resize(image){
 
     var canvas = document.createElement('canvas');
     canvas.width = image.width;
     canvas.height = image.height;
+
+    console.log("Width (resize)... ", image.width)
+    console.log("Height (resize)... ", image.height)
+
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, image.width, image.height);
 
     var dst = document.createElement('canvas');
-    dst.width = image_dimension;
-    dst.height = image_dimension;
+    dst.width = 32;
+    dst.height = 32;
 
     window.pica.WW = false;
     window.pica.resizeCanvas(canvas, dst, {
@@ -51,4 +58,3 @@ function resize(src){
     window.pica.WW = true;
     return dst.toDataURL("image/png");
 }
-  
